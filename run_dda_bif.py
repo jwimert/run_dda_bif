@@ -19,6 +19,8 @@ INPUTS:
         -csv_file provides csv file for each surface ('y' or 'n') 
         -source_photons selects signal photons only ('signal', default), 
          or all photons within window ('all')
+        -good_ponds_only process only bif segments classified as 'ponds' 
+         ('y' or 'n') 
 
 OUTPUTS:
         -bif_segment_xxxx.png summary plot of bifurcation surface heights
@@ -73,6 +75,8 @@ def parse():
                         dest='source_photons', help="Use only masked signal photons \
                         or all for finetrack segments ['signal' or 'all', \
                         default 'signal']", type=str)
+    parser.add_argument('-good_ponds_only', action='store', default='n', dest='good_ponds_only',
+                        help="compute surface heights only for DDA BIF pond segments ['y' or 'n', default 'n']", type=str)
     inps = parser.parse_args()
     return inps
 
@@ -112,7 +116,7 @@ debug_plots = inps.debug_plots
 csv_file = inps.csv_file
 no_fpb_corr = inps.no_fpb_corr
 source_photons = inps.source_photons
-
+good_ponds_only = inps.good_ponds_only
 
 ###
 ### Input Files:
@@ -123,7 +127,8 @@ source_photons = inps.source_photons
 # Set output directory
 #
 
-output_directory = '/Users/jwimert/Desktop/summer_arctic_20220726/DDA/finetrack_prep/output_run_dda_bif'
+output_directory = '/Users/jwimert/Desktop/summer_arctic_20220726/DDA/finetrack_prep/output_run_dda_bif_test_ponds'
+# output_directory = '/Users/jwimert/Desktop/summer_arctic_20220726/DDA/finetrack_prep/output_run_dda_bif_test3'
 # output_directory = '/Users/jwimert/Desktop/summer_arctic_20220726/DDA/finetrack_prep/output_run_dda_all_photons'
 
 if not (os.path.exists(output_directory)):
@@ -526,6 +531,9 @@ for beam in beams:
 
   for i_bif in bif_loc:
 
+    if ( (good_ponds_only == 'y') & (ATL05_ponds_good[i_bif] < 1) ):
+      continue
+
     print(' ')
     print('Processing bif seg:', i_bif, ATL05_bif0[i_bif], ATL05_bif1[i_bif], ATL05_ponds_good[i_bif])
     print(' ')
@@ -633,10 +641,10 @@ for beam in beams:
 ##
 ## Call finetrack, store output
 ##
-
-      print(' ')
-      print('CALL fine_track, ', i_step)
-      print(' ')
+# 
+#       print(' ')
+#       print('CALL fine_track, ', i_step)
+#       print(' ')
 
       h_surf_temp, w_gauss_temp, fpb_corr, h_fit_qual_flag, error_surface, hist_norm, bins_trim, wf_fit, qtr_h, \
         n_photons_trim, hist_full, hist_trim, wf_table_trim, wf_bins_trim = \
@@ -702,7 +710,7 @@ for beam in beams:
 #           hf.create_dataset('wf_bins_trim',data=wf_bins_trim)
 #           hf.close
 #           exit()
-
+# 
 
 
     
