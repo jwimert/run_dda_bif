@@ -58,10 +58,14 @@ def parse():
     """ Parse command line input arguments. """
 
     parser = argparse.ArgumentParser(description='Compute ATL07 sea ice heights')
-    parser.add_argument('-t0', action='store', default='0.0', dest='t0',
-                        help='start time of processing', type=str)
-    parser.add_argument('-t1', action='store', default='0.0', dest='t1',
-                        help='plot upper bound', type=str)
+#     parser.add_argument('-t0', action='store', default='0.0', dest='t0',
+#                         help='start time of processing', type=str)
+#     parser.add_argument('-t1', action='store', default='0.0', dest='t1',
+#                         help='plot upper bound', type=str)
+    parser.add_argument('-t0', action='store', dest='t0',
+                        help='start time of processing', type=float)
+    parser.add_argument('-t1', action='store', dest='t1',
+                        help='plot upper bound', type=float)
     parser.add_argument('-b', action='store', default='gt1r gt1l gt2r gt2l gt3r gt3l',
                         dest='beams', help="List of ATLAS beams [e.g.: \
                         'gt1r gt2r']", type=str)
@@ -109,8 +113,10 @@ print(' ')
 ###
 
 inps = parse()
-t0 = float(inps.t0)
-t1 = float(inps.t1)
+# t0 = float(inps.t0)
+# t1 = float(inps.t1)
+t0 = inps.t0
+t1 = inps.t1
 beams = (inps.beams.split())
 debug_plots = inps.debug_plots
 csv_file = inps.csv_file
@@ -461,7 +467,7 @@ for beam in beams:
 ##
 
   atl05_i0 = 0
-  atl05_i1 = 0
+  atl05_i1 = n_photons
 
   if t0 is None:
     atl05_i0 = 0
@@ -472,7 +478,7 @@ for beam in beams:
         atl05_i0 = i
         break
 
-  if t0 is None:
+  if t1 is None:
     atl05_i1 = n_photons - 1
     t1 = np.max(ATL05_t_ph)
   else:
@@ -486,9 +492,8 @@ for beam in beams:
   
   if (atl05_i0 < 0):
     atl05_i0 = 0
-  if (atl05_i0 > n_photons - 1):
+  if (atl05_i1 > n_photons - 1):
     atl05_i1 = n_photons - 1
-
 
 #
 # Collect BIF segments within timeframe
